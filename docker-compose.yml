@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  api:
+    build: .
+    ports: 
+      - "8080:8080"
+  mysql:
+    image: mysql:8.1.0
+    environment:
+      MYSQL_ROOT_PASSWORD: foos
+      MYSQL_DATABASE: bar
+    ports:
+      - "3306:3306"
