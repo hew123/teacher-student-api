@@ -10,12 +10,13 @@ export class Student {
     @Column()
     suspended: boolean;
 
-    // @ManyToMany(type => Teacher, teacher => teacher.students)
-    // teachers: Teacher[];
+    // This creates a separate table in MySQL for studentId:teacherId
+    @ManyToMany(type => Teacher, teacher => teacher.students)
+    //@ts-ignore
+    teachers: Teacher[];
 
-    constructor(email: string, suspended: boolean = false, teachers: Teacher[] = []) {
+    constructor(email: string, suspended: boolean = false) {
         this.email = email;
         this.suspended = suspended;
-        //this.teachers = teachers; 
     }
 }

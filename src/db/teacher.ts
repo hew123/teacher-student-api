@@ -7,12 +7,13 @@ export class Teacher {
     @PrimaryColumn()
     email: string;
 
-    // @ManyToMany(type => Student, student => student.teachers)
-    // @JoinTable()
-    // students: Student[];
+    // This creates a separate table in MySQL for teacherId:studentId
+    @ManyToMany(type => Student, student => student.teachers)
+    @JoinTable()
+    //@ts-ignore
+    students: Student[];
 
-    constructor(email: string, students: Student[] = []) {
+    constructor(email: string) {
         this.email = email;
-        //this.students = students;
     }
 }
