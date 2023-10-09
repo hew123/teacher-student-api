@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import bodyParser from 'body-parser';
+import { ErrorResponse, GetCommonStudentsResponse, NotifyRequest, NotifyResponse, RegisterRequest, SuspendRequest } from './dto';
 
 const app: Express = express();
 // Hardcoded port number as required if undefined
@@ -17,28 +18,28 @@ app.use((req, res, next) => {
 
 app.get('/api/commonstudents', (
     req: Request<undefined, undefined, undefined>, 
-    res: Response<undefined>
+    res: Response<GetCommonStudentsResponse | ErrorResponse>
     ) => {
         res.status(200).json();
 });
 
 app.post('/api/register', (
-    req: Request<undefined, undefined, undefined>, 
-    res: Response<undefined>
+    req: Request<undefined, undefined, RegisterRequest>, 
+    res: Response<undefined | ErrorResponse>
     ) => {
         res.status(204).json();
 });
 
 app.post('/api/suspend', (
-    req: Request<undefined, undefined, undefined>, 
-    res: Response<undefined>
+    req: Request<undefined, undefined, SuspendRequest>, 
+    res: Response<undefined | ErrorResponse>
     ) => {
     res.status(204).json();
 });
 
 app.post('/api/retrievefornotifications', (
-    req: Request<undefined, undefined, undefined>, 
-    res: Response<undefined>
+    req: Request<undefined, undefined, NotifyRequest>, 
+    res: Response<NotifyResponse | ErrorResponse>
     ) => {
     res.status(200).json();
 });
