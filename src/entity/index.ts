@@ -4,7 +4,7 @@ import { User } from "./User"
 AppDataSource.initialize().then(async () => {
 
     console.log("Inserting a new user into the database...")
-    const user = new User(1,'Timber', 'Saw', 25)
+    const user = new User(2,'Timber', 'Saw', 25)
     await AppDataSource.manager.save(user)
     console.log("Saved a new user with id: " + user.id)
 

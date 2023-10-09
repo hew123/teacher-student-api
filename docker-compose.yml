@@ -8,20 +8,8 @@ services:
   #     - "8080:8080"
   mysql:
     image: mysql:latest
-    restart: always
-    # network_mode: "host"
-    # hostname: localhost
     environment:
-      MYSQL_ROOT_HOST: '%'
-      MYSQL_ROOT_AUTH_PLUGIN: 'mysql_native_password'
-      MYSQL_DATABASE: test
       MYSQL_ROOT_PASSWORD: test
-      MYSQL_USER: foo
-      MYSQL_PASSWORD: test
-    command: --init-file /docker-entrypoint-initdb.d/init.sql
-    volumes:
-     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    # restart: always
-    # command: --default-authentication-plugin=mysql_native_password
+      MYSQL_DATABASE: test
     ports:
       - "3306:3306"
