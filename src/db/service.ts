@@ -1,29 +1,13 @@
-import { DataSource, In } from 'typeorm';
+import { In } from 'typeorm';
 import { Teacher } from './teacher';
 import { Student } from './student';
 import { Email } from '../email';
+import { DataBaseConnection } from './connect';
 
 export class TeacherStudentPersistenceService {
     constructor(
-        readonly dbConnection: DataSource
+        readonly dbConnection: DataBaseConnection
     ) {}
-
-    async connectToDb(): Promise<void>{
-        console.log('Connecting to DB...')
-        if (this.dbConnection.isInitialized) {
-            console.log('DB already connected.');
-        }
-        else {
-            await this.dbConnection.initialize();
-            console.log('DB connected.');
-        }
-    }
-    // TODO: should call this only once from handler
-    async closeConnection(): Promise<void>{
-        console.log('Closing connection to DB...')
-        await this.dbConnection.destroy();
-        console.log('Connection closed.')
-    }
 
     // TODO: use connection wrapper for all funcs
 
