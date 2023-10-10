@@ -32,29 +32,30 @@ export class TeacherStudentPersistenceService {
     //       if add teacher2.students = [studentA]
     //       then will we get studentA.teachers = [teacher1, teacher2]
     // TODO: retrieve recursively teachers.students.teachers
-    async register(teacherId: string, studentIds: string[]): Promise<void> {
+    async register(teacherEmail: Email, studentEmails: Email[]): Promise<void> {
         await this.connectToDb();
         let teacher = await this.dbConnection.getRepository(Teacher).findOne({
             relations: {
                 students: true,
             },
-            where: { email: teacherId }
+            where: { email: teacherEmail.id }
         });
 
         if (teacher === null) {
-            console.log(`Teacher by ${teacherId} does not exist. Creating...`);
-            teacher = new Teacher(teacherId);
+            console.log(`Teacher by ${teacherEmail.id} does not exist. Creating...`);
+            teacher = new Teacher(teacherEmail.id);
         }
 
         // TODO: add test 
         // This is to avoid overwriting students already created
         const students = await this.dbConnection.getRepository(Student).findBy({
-            email: In(studentIds),
+            email: In(studentEmails),
         });
         const registeredStudents = teacher.students ?? [];
         const existingIds = new Set(students.map((s) => s.email));
-        const studentsToAdd = studentIds.filter((id) => !existingIds.has(id))
-                                        .map((id) => new Student(id));
+        const studentsToAdd = studentEmails.filter((email) => !existingIds.has(email.id))
+                                            .map((email) => new Student(email.id));
+        // TODO: add test to ensure existing registered students do not get overwrite
         teacher.students = [...registeredStudents, ...students, ...studentsToAdd];
 
         await this.dbConnection.getRepository(Teacher).save(teacher);
@@ -63,22 +64,15 @@ export class TeacherStudentPersistenceService {
 
     // TODO: add test
     async getCommonStudents(teacherEmails: Email[]): Promise<Student[]> {
-        const queryFields = teacherEmails.map((email) => { 
-            return { 
-                teachers: { email: email.id }
-            };
-        });
         // i.e. SELECT * FROM student-teachers 
         // WHERE teacher.email = 'A' OR teacher.email = 'B' OR OR teacher.email = 'C' 
         const students = await this.dbConnection.getRepository(Student).find({
             relations: {
                 teachers: true,
             },
-            // exmample:
-            // { teachers: { email: 'teacherA@school.com' }},
-            // { teachers: { email: 'teacherB@school.com' }},
-            // { teachers: { email: 'teacherC@school.com' }},
-            where: queryFields
+            where: {
+                teachers: { email: In(teacherEmails.map((e) => e.id))}
+            }
         });
         const requestedTeacherIds = new Set(teacherEmails.map((t) => t.id));
         return students.filter((student) => {
