@@ -7,8 +7,11 @@ export class Teacher {
     @PrimaryColumn()
     email: string;
 
-    // This creates a separate table in MySQL for teacherId:studentId
-    @ManyToMany(type => Student, student => student.teachers)
+    // This creates a separate relation table in MySQL for teacher-students
+    @ManyToMany(() => Student, (student) => student.teachers, {
+        cascade: true,
+        onDelete: 'CASCADE'
+    })
     @JoinTable()
     //@ts-ignore
     students: Student[];

@@ -10,8 +10,10 @@ export class Student {
     @Column()
     suspended: boolean;
 
-    // This creates a separate table in MySQL for studentId:teacherId
-    @ManyToMany(type => Teacher, teacher => teacher.students)
+    // This allows querying of student-teachers from Student table
+    // although Teacher table is the one owning the relation
+    // Omitting this only allows querying of teacher-students from Teacher table
+    @ManyToMany(() => Teacher, (teacher) => teacher.students, { onDelete: 'CASCADE'})
     //@ts-ignore
     teachers: Teacher[];
 

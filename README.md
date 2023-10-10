@@ -11,3 +11,6 @@ export NVM_DIR="$HOME/.nvm"
 
 ## High Level Design
 ![design](./design.png)
+
+## TypeORM
+- We are using the `Many-to-many relationship` functionality in `typeorm` to simplify cascading addition/removal of entities. https://orkhan.gitbook.io/typeorm/docs/many-to-many-relations
