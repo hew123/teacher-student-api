@@ -1,15 +1,18 @@
-import { In } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Teacher } from './db/teacher';
 import { Student } from './db/student';
 import { Email } from './model/email';
 import { DataBaseConnection } from './db/connect';
 
-export class TeacherStudentPersistenceService {
+export class RegistrationService {
+    teacherRepository: Repository<Teacher>;
+    studentRepository: Repository<Student>;
     constructor(
         readonly dbConnection: DataBaseConnection
-    ) {}
-
-    // TODO: use connection wrapper for all funcs
+    ) {
+        this.teacherRepository = dbConnection.getRepository(Teacher);
+        this.studentRepository = dbConnection.getRepository(Student);
+    }
 
     // TODO: check if can retrieve student Ids with the full details to optimize db ops
     // TODO: check if studentA.teachers = [teacher1]
@@ -17,7 +20,7 @@ export class TeacherStudentPersistenceService {
     //       then will we get studentA.teachers = [teacher1, teacher2]
     // TODO: retrieve recursively teachers.students.teachers
     async register(teacherEmail: Email, studentEmails: Email[]): Promise<void> {
-        let teacher = await this.dbConnection.getRepository(Teacher).findOne({
+        let teacher = await this.teacherRepository.findOne({
             relations: {
                 students: true,
             },
@@ -30,7 +33,7 @@ export class TeacherStudentPersistenceService {
         }
         // TODO: add test 
         // This is to avoid overwriting students already created
-        const students = await this.dbConnection.getRepository(Student).findBy({
+        const students = await this.studentRepository.findBy({
             email: In(studentEmails),
         });
         const registeredStudents = teacher.students ?? [];
@@ -40,14 +43,14 @@ export class TeacherStudentPersistenceService {
         // TODO: add test to ensure existing registered students do not get overwrite
         teacher.students = [...registeredStudents, ...students, ...studentsToAdd];
 
-        await this.dbConnection.getRepository(Teacher).save(teacher);
+        await this.teacherRepository.save(teacher);
     }
 
     // TODO: add test
     async getCommonStudents(teacherEmails: Email[]): Promise<Student[]> {
         // i.e. SELECT * FROM student-teachers 
         // WHERE teacher.email = 'A' OR teacher.email = 'B' OR OR teacher.email = 'C' 
-        const students = await this.dbConnection.getRepository(Student).find({
+        const students = await this.studentRepository.find({
             relations: {
                 teachers: true,
             },
@@ -63,7 +66,7 @@ export class TeacherStudentPersistenceService {
     }
 
     async suspend(studentEmail: Email): Promise<void> {
-        const student = await this.dbConnection.getRepository(Student).findOne({
+        const student = await this.studentRepository.findOne({
             where: { email: studentEmail.id }
         });
         if (student === null) {
@@ -71,11 +74,11 @@ export class TeacherStudentPersistenceService {
         }
 
         student.suspended = true;
-        await this.dbConnection.getRepository(Student).save(student);
+        await this.studentRepository.save(student);
     }
 
     async getNonSuspendedStudents(teacherEmail: Email): Promise<Student[]> {
-        const teacher = await this.dbConnection.getRepository(Teacher).findOne({
+        const teacher = await this.teacherRepository.findOne({
             relations: {
                 students: true,
             },
