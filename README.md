@@ -1,7 +1,7 @@
 # teacher-student-api
 
 
-### To troubleshoot having multiple node version installed and not using a correct version
+### To troubleshoot having multiple node versions installed and not using the correct version
 - install `nvm`
 - to access `nvm` from console, sometimes need to export the part:
 ```
