@@ -1,11 +1,19 @@
+export type SuccessResponse = {
+    success: boolean
+}
+
 export type RegisterRequest = {
     teacher: string;
     students: string[];
 }
 
+export type RegisterResponse = SuccessResponse;
+
 export type SuspendRequest = {
     student: string;
 }
+
+export type SuspendResponse = SuccessResponse;
 
 export type GetCommonStudentsRequest = {
     teacher: string[] | string;
@@ -31,6 +39,7 @@ export type ErrorResponse = {
 export type ErrorRespWithCode = ErrorResponse & { statusCode: number };
 
 export function isErrRespWithCode(res: any | ErrorRespWithCode): res is ErrorRespWithCode {
-    return (res as ErrorRespWithCode).message !== undefined
-        && (res as ErrorRespWithCode).statusCode !== undefined;
+    return res === undefined ? 
+            res === null ? false: 
+            false:  'message' in res && 'statusCode' in res;
 }

@@ -1,4 +1,14 @@
-import { ErrorRespWithCode, GetCommonStudentsRequest, GetCommonStudentsResponse, NotifyRequest, NotifyResponse, RegisterRequest, SuspendRequest } from "./model/dto";
+import { 
+    ErrorRespWithCode, 
+    GetCommonStudentsRequest, 
+    GetCommonStudentsResponse, 
+    NotifyRequest, 
+    NotifyResponse, 
+    RegisterRequest,
+    RegisterResponse,
+    SuspendRequest,
+    SuspendResponse
+} from "./model/dto";
 import { Email, NotificationText } from "./model/email";
 import { RequestError } from "./model/error";
 import { RegistrationService } from "./service";
@@ -8,11 +18,12 @@ export class RegistrationController {
         readonly service: RegistrationService
     ) {}
 
-    register = async(input: RegisterRequest): Promise<void | ErrorRespWithCode> => {
+    register = async(input: RegisterRequest): Promise<RegisterResponse | ErrorRespWithCode> => {
         try {
             const teacherEmail = new Email(input.teacher);
             const studentEmails = input.students.map((s) => new Email(s));
             await this.service.register(teacherEmail, studentEmails);
+            return { success: true };
         }
         catch (err) {
             const errMsg = `Error registering teacher ${input.teacher} with students ${JSON.stringify(input.students)}: ${err}`
@@ -23,10 +34,11 @@ export class RegistrationController {
         }
     }
 
-    suspend = async(input: SuspendRequest): Promise<void | ErrorRespWithCode> => {
+    suspend = async(input: SuspendRequest): Promise<SuspendResponse | ErrorRespWithCode> => {
         try {
             const email = new Email(input.student);
             await this.service.suspend(email);
+            return { success: true };
         }
         catch(err) {
             const errMsg = `Error suspending student ${input.student}: ${err}`

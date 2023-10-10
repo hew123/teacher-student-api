@@ -10,8 +10,10 @@ import {
     GetCommonStudentsResponse, 
     NotifyRequest, 
     NotifyResponse, 
-    RegisterRequest, 
-    SuspendRequest, 
+    RegisterRequest,
+    RegisterResponse,
+    SuspendRequest,
+    SuspendResponse,
     isErrRespWithCode 
 } from './model/dto';
 import { createHandler } from './handler';
@@ -52,22 +54,22 @@ app.get('/api/commonstudents', async(
 
 app.post('/api/register', async(
     req: Request<undefined, undefined, RegisterRequest>, 
-    res: Response<undefined | ErrorResponse>
+    res: Response<RegisterResponse | ErrorResponse>
     ) => {
         const resp = await registerHandler(req.body);
         isErrRespWithCode(resp) ? 
             res.status(resp.statusCode).json({ message: resp.message}): 
-            res.status(204).json();
+            res.status(204).json(resp);
 });
 
 app.post('/api/suspend', async(
     req: Request<undefined, undefined, SuspendRequest>, 
-    res: Response<undefined | ErrorResponse>
+    res: Response<SuspendResponse | ErrorResponse>
     ) => {
         const resp = await suspendHandler(req.body);
         isErrRespWithCode(resp) ? 
             res.status(resp.statusCode).json({ message: resp.message}): 
-            res.status(204).json();
+            res.status(204).json(resp);
 });
 
 app.post('/api/retrievefornotifications', async(
@@ -77,7 +79,7 @@ app.post('/api/retrievefornotifications', async(
     const resp = await notifyHandler(req.body);
     isErrRespWithCode(resp) ? 
         res.status(resp.statusCode).json({ message: resp.message}): 
-        res.status(200).json();
+        res.status(200).json(resp);
 });
 
 app.listen(port, () => {
