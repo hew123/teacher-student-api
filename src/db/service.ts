@@ -8,7 +8,7 @@ export class TeacherStudentPersistenceService {
         readonly dbConnection: DataSource
     ) {}
 
-    private async connectToDb(): Promise<void>{
+    async connectToDb(): Promise<void>{
         console.log('Connecting to DB...')
         if (this.dbConnection.isInitialized) {
             console.log('DB already connected.');
@@ -19,7 +19,7 @@ export class TeacherStudentPersistenceService {
         }
     }
     // TODO: should call this only once from handler
-    private async closeConnection(): Promise<void>{
+    async closeConnection(): Promise<void>{
         console.log('Closing connection to DB...')
         await this.dbConnection.destroy();
         console.log('Connection closed.')
@@ -33,7 +33,6 @@ export class TeacherStudentPersistenceService {
     //       then will we get studentA.teachers = [teacher1, teacher2]
     // TODO: retrieve recursively teachers.students.teachers
     async register(teacherEmail: Email, studentEmails: Email[]): Promise<void> {
-        await this.connectToDb();
         let teacher = await this.dbConnection.getRepository(Teacher).findOne({
             relations: {
                 students: true,
@@ -59,7 +58,6 @@ export class TeacherStudentPersistenceService {
         teacher.students = [...registeredStudents, ...students, ...studentsToAdd];
 
         await this.dbConnection.getRepository(Teacher).save(teacher);
-        await this.closeConnection();
     }
 
     // TODO: add test
@@ -79,6 +77,18 @@ export class TeacherStudentPersistenceService {
             const teacherIds = new Set(student.teachers.map((t) => t.email));
             return isSubset(requestedTeacherIds, teacherIds);
         })
+    }
+
+    async suspend(email: Email): Promise<void> {
+        const student = await this.dbConnection.getRepository(Student).findOne({
+            where: { email: email.id }
+        });
+        if (student === null) {
+            throw new Error(`Student ${email.id} does not exist.`);
+        }
+
+        student.suspended = true;
+        await this.dbConnection.getRepository(Student).save(student);
     }
 }
 
