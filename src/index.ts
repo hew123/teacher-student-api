@@ -46,30 +46,30 @@ app.get('/api/commonstudents', async(
     req: Request<undefined, undefined, undefined, GetCommonStudentsRequest>, 
     res: Response<GetCommonStudentsResponse | ErrorResponse>
     ) => {
-        const resp = await getCommonStudentsHandler(req.query);
+    const resp = await getCommonStudentsHandler(req.query);
         isErrRespWithCode(resp) ? 
-            res.status(resp.statusCode).json({ message: resp.message}): 
-            res.status(200).json(resp);
+        res.status(resp.statusCode).json({ message: resp.message}): 
+        res.status(200).json(resp);
 });
 
 app.post('/api/register', async(
     req: Request<undefined, undefined, RegisterRequest>, 
     res: Response<RegisterResponse | ErrorResponse>
     ) => {
-        const resp = await registerHandler(req.body);
-        isErrRespWithCode(resp) ? 
-            res.status(resp.statusCode).json({ message: resp.message}): 
-            res.status(204).json(resp);
+    const resp = await registerHandler(req.body);
+    isErrRespWithCode(resp) ? 
+        res.status(resp.statusCode).json({ message: resp.message}): 
+        res.status(204).json(resp);
 });
 
 app.post('/api/suspend', async(
     req: Request<undefined, undefined, SuspendRequest>, 
     res: Response<SuspendResponse | ErrorResponse>
     ) => {
-        const resp = await suspendHandler(req.body);
-        isErrRespWithCode(resp) ? 
-            res.status(resp.statusCode).json({ message: resp.message}): 
-            res.status(204).json(resp);
+    const resp = await suspendHandler(req.body);
+    isErrRespWithCode(resp) ? 
+        res.status(resp.statusCode).json({ message: resp.message}): 
+        res.status(204).json(resp);
 });
 
 app.post('/api/retrievefornotifications', async(
