@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import bodyParser from 'body-parser';
-import { ErrorResponse, GetCommonStudentsResponse, NotifyRequest, NotifyResponse, RegisterRequest, SuspendRequest } from './model/dto';
+import { ErrorResponse, GetCommonStudentsRequest, GetCommonStudentsResponse, NotifyRequest, NotifyResponse, RegisterRequest, SuspendRequest } from './model/dto';
 
 const app: Express = express();
 // Hardcoded port number as required if undefined
@@ -12,12 +12,12 @@ const port = process.env.PORT || '8080';
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-    console.log('Request: ', JSON.stringify(req.path), JSON.stringify(req.body));
+    console.log('Request: ', JSON.stringify(req.path), JSON.stringify(req.query), JSON.stringify(req.body));
     next()
 })
 
 app.get('/api/commonstudents', (
-    req: Request<undefined, undefined, undefined>, 
+    req: Request<undefined, undefined, undefined, GetCommonStudentsRequest>, 
     res: Response<GetCommonStudentsResponse | ErrorResponse>
     ) => {
         res.status(200).json();

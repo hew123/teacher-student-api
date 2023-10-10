@@ -7,6 +7,10 @@ export type SuspendRequest = {
     student: string;
 }
 
+export type GetCommonStudentsRequest = {
+    teacher: string[] | string;
+}
+
 export type GetCommonStudentsResponse = {
     students: string[];
 }
