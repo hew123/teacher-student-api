@@ -1,4 +1,4 @@
-# teacher-student-api
+# Teacher-Student Registration Service 
 
 
 ### To troubleshoot having multiple node versions installed and not using the correct version
