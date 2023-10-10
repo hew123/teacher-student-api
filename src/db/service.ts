@@ -1,6 +1,7 @@
 import { DataSource, In } from 'typeorm';
 import { Teacher } from './teacher';
 import { Student } from './student';
+import { Email } from '../email';
 
 export class TeacherStudentPersistenceService {
     constructor(
@@ -59,4 +60,40 @@ export class TeacherStudentPersistenceService {
         await this.dbConnection.getRepository(Teacher).save(teacher);
         await this.closeConnection();
     }
+
+    // TODO: add test
+    async getCommonStudents(teacherEmails: Email[]): Promise<Student[]> {
+        const queryFields = teacherEmails.map((email) => { 
+            return { 
+                teachers: { email: email.id }
+            };
+        });
+        // i.e. SELECT * FROM student-teachers 
+        // WHERE teacher.email = 'A' OR teacher.email = 'B' OR OR teacher.email = 'C' 
+        const students = await this.dbConnection.getRepository(Student).find({
+            relations: {
+                teachers: true,
+            },
+            // exmample:
+            // { teachers: { email: 'teacherA@school.com' }},
+            // { teachers: { email: 'teacherB@school.com' }},
+            // { teachers: { email: 'teacherC@school.com' }},
+            where: queryFields
+        });
+        const requestedTeacherIds = new Set(teacherEmails.map((t) => t.id));
+        return students.filter((student) => {
+            const teacherIds = new Set(student.teachers.map((t) => t.email));
+            return isSubset(requestedTeacherIds, teacherIds);
+        })
+    }
+}
+
+
+function isSubset(subset: Set<string>, set: Set<string>): boolean {
+    for (const val of subset.values()) {
+        if (!set.has(val)) {
+            return false;
+        }
+    }
+    return true;
 }
