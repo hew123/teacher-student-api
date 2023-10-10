@@ -1,5 +1,5 @@
 import { ErrorResponse, GetCommonStudentsRequest, GetCommonStudentsResponse, NotifyRequest, NotifyResponse, RegisterRequest, SuspendRequest } from "./model/dto";
-import { Email } from "./model/email";
+import { Email, NotificationText } from "./model/email";
 import { RegistrationService } from "./service";
 
 export class RegistrationController {
@@ -36,9 +36,11 @@ export class RegistrationController {
         try {
             const teacherEmail = new Email(input.teacher);
             const students = await this.service.getNonSuspendedStudents(teacherEmail);
-            // TODO: Add emails from input
-            const recipients = students.map((s) => s.email);
-            return { recipients: recipients };
+            const notificationText = new NotificationText(input.notification);
+            const notifyEmails = notificationText.emails.map((e) => e.text);
+            const notifyEmailSet = new Set(notifyEmails);
+            const recipients = students.map((s) => s.email).filter((e) => !notifyEmailSet.has(e));
+            return { recipients: [...notifyEmails, ...recipients] };
         }
         catch(err) {
             const errMsg = `Error notifying from teacher ${input.teacher} with notification ${input.notification}: ${err}`
