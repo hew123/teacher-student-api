@@ -8,7 +8,7 @@ export class RegistrationController {
         readonly service: RegistrationService
     ) {}
 
-    async register(input: RegisterRequest): Promise<void | ErrorRespWithCode> {
+    register = async(input: RegisterRequest): Promise<void | ErrorRespWithCode> => {
         try {
             const teacherEmail = new Email(input.teacher);
             const studentEmails = input.students.map((s) => new Email(s));
@@ -23,7 +23,7 @@ export class RegistrationController {
         }
     }
 
-    async suspend(input: SuspendRequest): Promise<void | ErrorRespWithCode> {
+    suspend = async(input: SuspendRequest): Promise<void | ErrorRespWithCode> => {
         try {
             const email = new Email(input.student);
             await this.service.suspend(email);
@@ -37,7 +37,7 @@ export class RegistrationController {
         }
     }
 
-    async notify(input: NotifyRequest): Promise<NotifyResponse | ErrorRespWithCode> {
+    notify = async(input: NotifyRequest): Promise<NotifyResponse | ErrorRespWithCode> => {
         try {
             const teacherEmail = new Email(input.teacher);
             const students = await this.service.getNonSuspendedStudents(teacherEmail);
@@ -56,7 +56,7 @@ export class RegistrationController {
         }
     }
 
-    async getCommonStudents(input: GetCommonStudentsRequest): Promise<GetCommonStudentsResponse | ErrorRespWithCode> {
+    getCommonStudents = async(input: GetCommonStudentsRequest): Promise<GetCommonStudentsResponse | ErrorRespWithCode> => {
         try {
             const teachers = Array.isArray(input) ? input: [input];
             const emails = teachers.map((t) => new Email(t));
