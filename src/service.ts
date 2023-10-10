@@ -24,12 +24,12 @@ export class RegistrationService {
             relations: {
                 students: true,
             },
-            where: { email: teacherEmail.id }
+            where: { email: teacherEmail.text }
         });
 
         if (teacher === null) {
-            console.log(`Teacher by ${teacherEmail.id} does not exist. Creating...`);
-            teacher = new Teacher(teacherEmail.id);
+            console.log(`Teacher by ${teacherEmail.text} does not exist. Creating...`);
+            teacher = new Teacher(teacherEmail.text);
         }
         // TODO: add test 
         // This is to avoid overwriting students already created
@@ -38,8 +38,8 @@ export class RegistrationService {
         });
         const registeredStudents = teacher.students ?? [];
         const existingIds = new Set(students.map((s) => s.email));
-        const studentsToAdd = studentEmails.filter((email) => !existingIds.has(email.id))
-                                            .map((email) => new Student(email.id));
+        const studentsToAdd = studentEmails.filter((email) => !existingIds.has(email.text))
+                                            .map((email) => new Student(email.text));
         // TODO: add test to ensure existing registered students do not get overwrite
         teacher.students = [...registeredStudents, ...students, ...studentsToAdd];
 
@@ -55,10 +55,10 @@ export class RegistrationService {
                 teachers: true,
             },
             where: {
-                teachers: { email: In(teacherEmails.map((e) => e.id))}
+                teachers: { email: In(teacherEmails.map((e) => e.text))}
             }
         });
-        const requestedTeacherIds = new Set(teacherEmails.map((t) => t.id));
+        const requestedTeacherIds = new Set(teacherEmails.map((t) => t.text));
         return students.filter((student) => {
             const teacherIds = new Set(student.teachers.map((t) => t.email));
             return isSubset(requestedTeacherIds, teacherIds);
@@ -67,10 +67,10 @@ export class RegistrationService {
 
     async suspend(studentEmail: Email): Promise<void> {
         const student = await this.studentRepository.findOne({
-            where: { email: studentEmail.id }
+            where: { email: studentEmail.text }
         });
         if (student === null) {
-            throw new Error(`Student ${studentEmail.id} does not exist.`);
+            throw new Error(`Student ${studentEmail.text} does not exist.`);
         }
 
         student.suspended = true;
@@ -83,7 +83,7 @@ export class RegistrationService {
                 students: true,
             },
             where: { 
-                email: teacherEmail.id,
+                email: teacherEmail.text,
                 students: {
                     suspended: false
                 }
