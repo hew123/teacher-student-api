@@ -3,6 +3,7 @@ import { Teacher } from './db/teacher';
 import { Student } from './db/student';
 import { Email } from './model/email';
 import { DataBaseConnection } from './db/connect';
+import { RequestError } from './model/error';
 
 export class RegistrationService {
     teacherRepository: Repository<Teacher>;
@@ -70,7 +71,7 @@ export class RegistrationService {
             where: { email: studentEmail.text }
         });
         if (student === null) {
-            throw new Error(`Student ${studentEmail.text} does not exist.`);
+            throw new RequestError(`Student ${studentEmail.text} does not exist.`);
         }
 
         student.suspended = true;
@@ -90,7 +91,7 @@ export class RegistrationService {
             }
         });
         if (teacher === null) {
-            throw new Error(`Teacher ${teacherEmail} does not exist.`);
+            throw new RequestError(`Teacher ${teacherEmail} does not exist.`);
         }
         return teacher.students;
     }

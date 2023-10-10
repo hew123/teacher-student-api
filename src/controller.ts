@@ -1,5 +1,6 @@
-import { ErrorResponse, GetCommonStudentsRequest, GetCommonStudentsResponse, NotifyRequest, NotifyResponse, RegisterRequest, SuspendRequest } from "./model/dto";
+import { ErrorRespWithCode, GetCommonStudentsRequest, GetCommonStudentsResponse, NotifyRequest, NotifyResponse, RegisterRequest, SuspendRequest } from "./model/dto";
 import { Email, NotificationText } from "./model/email";
+import { RequestError } from "./model/error";
 import { RegistrationService } from "./service";
 
 export class RegistrationController {
@@ -7,7 +8,7 @@ export class RegistrationController {
         readonly service: RegistrationService
     ) {}
 
-    async register(input: RegisterRequest): Promise<void | ErrorResponse> {
+    async register(input: RegisterRequest): Promise<void | ErrorRespWithCode> {
         try {
             const teacherEmail = new Email(input.teacher);
             const studentEmails = input.students.map((s) => new Email(s));
@@ -16,11 +17,13 @@ export class RegistrationController {
         catch (err) {
             const errMsg = `Error registering teacher ${input.teacher} with students ${JSON.stringify(input.students)}: ${err}`
             console.log(errMsg);
-            return { message: errMsg };
+            return err instanceof RequestError ? 
+                { message: errMsg, statusCode: 400 }: 
+                { message: errMsg, statusCode: 500 };
         }
     }
 
-    async suspend(input: SuspendRequest): Promise<void | ErrorResponse> {
+    async suspend(input: SuspendRequest): Promise<void | ErrorRespWithCode> {
         try {
             const email = new Email(input.student);
             await this.service.suspend(email);
@@ -28,11 +31,13 @@ export class RegistrationController {
         catch(err) {
             const errMsg = `Error suspending student ${input.student}: ${err}`
             console.log(errMsg);
-            return { message: errMsg };
+            return err instanceof RequestError ? 
+                { message: errMsg, statusCode: 400 }: 
+                { message: errMsg, statusCode: 500 };
         }
     }
 
-    async notify(input: NotifyRequest): Promise<NotifyResponse | ErrorResponse> {
+    async notify(input: NotifyRequest): Promise<NotifyResponse | ErrorRespWithCode> {
         try {
             const teacherEmail = new Email(input.teacher);
             const students = await this.service.getNonSuspendedStudents(teacherEmail);
@@ -45,11 +50,13 @@ export class RegistrationController {
         catch(err) {
             const errMsg = `Error notifying from teacher ${input.teacher} with notification ${input.notification}: ${err}`
             console.log(errMsg);
-            return { message: errMsg };
+            return err instanceof RequestError ? 
+                { message: errMsg, statusCode: 400 }: 
+                { message: errMsg, statusCode: 500 };
         }
     }
 
-    async getCommonStudents(input: GetCommonStudentsRequest): Promise<GetCommonStudentsResponse | ErrorResponse> {
+    async getCommonStudents(input: GetCommonStudentsRequest): Promise<GetCommonStudentsResponse | ErrorRespWithCode> {
         try {
             const teachers = Array.isArray(input) ? input: [input];
             const emails = teachers.map((t) => new Email(t));
@@ -59,7 +66,9 @@ export class RegistrationController {
         catch(err) {
             const errMsg = `Error getting common students with teachers ${input.teacher} : ${err}`
             console.log(errMsg);
-            return { message: errMsg };
+            return err instanceof RequestError ? 
+                { message: errMsg, statusCode: 400 }: 
+                { message: errMsg, statusCode: 500 };
         }
     }
 

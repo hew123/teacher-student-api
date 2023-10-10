@@ -27,3 +27,10 @@ export type NotifyResponse = {
 export type ErrorResponse = {
     message: string;
 }
+
+export type ErrorRespWithCode = ErrorResponse & { statusCode: number };
+
+export function isErrRespWithCode(res: any | ErrorRespWithCode): res is ErrorRespWithCode {
+    return (res as ErrorRespWithCode).message !== undefined
+        && (res as ErrorRespWithCode).statusCode !== undefined;
+}
