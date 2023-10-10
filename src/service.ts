@@ -1,8 +1,8 @@
 import { In } from 'typeorm';
-import { Teacher } from './teacher';
-import { Student } from './student';
-import { Email } from '../email';
-import { DataBaseConnection } from './connect';
+import { Teacher } from './db/teacher';
+import { Student } from './db/student';
+import { Email } from './model/email';
+import { DataBaseConnection } from './db/connect';
 
 export class TeacherStudentPersistenceService {
     constructor(

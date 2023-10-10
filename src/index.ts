@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import bodyParser from 'body-parser';
-import { ErrorResponse, GetCommonStudentsResponse, NotifyRequest, NotifyResponse, RegisterRequest, SuspendRequest } from './dto';
+import { ErrorResponse, GetCommonStudentsResponse, NotifyRequest, NotifyResponse, RegisterRequest, SuspendRequest } from './model/dto';
 
 const app: Express = express();
 // Hardcoded port number as required if undefined
