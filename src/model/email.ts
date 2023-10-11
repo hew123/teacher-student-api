@@ -8,7 +8,6 @@ const EXTRACT_EMAIL_REGEX = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b
 const EMAIL_REGEX = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
 
 
-// TODO: add test
 export class Email {
     constructor(readonly text: string) {
         if (EMAIL_REGEX.test(text) == false) {
@@ -17,7 +16,6 @@ export class Email {
     }
 }
 
-// TODO: add test
 export class NotificationText {
     emails: Email[]
     constructor(readonly notifyText: string) {

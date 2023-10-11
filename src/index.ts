@@ -47,7 +47,7 @@ app.get('/api/commonstudents', async(
     res: Response<GetCommonStudentsResponse | ErrorResponse>
     ) => {
     const resp = await getCommonStudentsHandler(req.query);
-        isErrRespWithCode(resp) ? 
+    isErrRespWithCode(resp) ? 
         res.status(resp.statusCode).json({ message: resp.message}): 
         res.status(200).json(resp);
 });
