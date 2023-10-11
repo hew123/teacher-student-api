@@ -52,7 +52,7 @@ export class RegistrationController {
     notify = async(input: NotifyRequest): Promise<NotifyResponse | ErrorRespWithCode> => {
         try {
             const teacherEmail = new Email(input.teacher);
-            const students = await this.service.getNonSuspendedStudents(teacherEmail);
+            const students = await this.service.getUnsuspendedStudents(teacherEmail);
             const notificationText = new NotificationText(input.notification);
             const notifyEmails = notificationText.emails.map((e) => e.text);
             const notifyEmailSet = new Set(notifyEmails);

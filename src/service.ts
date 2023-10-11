@@ -15,11 +15,6 @@ export class RegistrationService {
         this.studentRepository = dbConnection.getRepository(Student);
     }
 
-    // TODO: check if can retrieve student Ids with the full details to optimize db ops
-    // TODO: check if studentA.teachers = [teacher1]
-    //       if add teacher2.students = [studentA]
-    //       then will we get studentA.teachers = [teacher1, teacher2]
-    // TODO: retrieve recursively teachers.students.teachers
     async register(teacherEmail: Email, studentEmails: Email[]): Promise<void> {
         let teacher = await this.teacherRepository.findOne({
             relations: {
@@ -32,26 +27,26 @@ export class RegistrationService {
             console.log(`Teacher by ${teacherEmail.text} does not exist. Creating...`);
             teacher = new Teacher(teacherEmail.text);
         }
-        // TODO: add test 
-        // This is to avoid overwriting students already created
-        const students = await this.studentRepository.findBy({
+        // Retrieving existing students and reusing in save()
+        // to ensure we do not overwrite existing attributes e.g. suspended flag
+        const existingStudents = await this.studentRepository.findBy({
             email: In(studentEmails.map((e) => e.text)),
         });
-        const registeredStudents = teacher.students ?? [];
-        const existingIds = new Set(students.map((s) => s.email));
+        const existingIds = new Set(existingStudents.map((s) => s.email));
+        // Any registered students need to be appended as well
+        // otherwise save() will treat it as 'to remove'
+        const registeredStudents = teacher.students?.filter((s) => !existingIds.has(s.email)) ?? [];
         const studentsToAdd = studentEmails.filter((email) => !existingIds.has(email.text))
                                             .map((email) => new Student(email.text));
-        // TODO: add test to ensure existing registered students do not get overwrite
-        teacher.students = [...registeredStudents, ...students, ...studentsToAdd];
+        teacher.students = [...registeredStudents, ...existingStudents, ...studentsToAdd];
 
         await this.teacherRepository.save(teacher);
     }
 
-    // TODO: add test
     async getCommonStudents(teacherEmails: Email[]): Promise<Student[]> {
         // i.e. SELECT * FROM students
-        // LEFT JOIN student-teachers AS a ON students.email = student-teachers.email
-        // WHERE student-teachers.email IN ('A','B','C')
+        // LEFT JOIN student-teachers AS a ON students.email = student-teachers.studentId
+        // WHERE student-teachers.teacherId IN ('A','B','C')
         const students = await this.studentRepository.find({
             relations: {
                 teachers: true,
@@ -74,12 +69,11 @@ export class RegistrationService {
         if (student === null) {
             throw new RequestError(`Student ${studentEmail.text} does not exist.`);
         }
-
         student.suspended = true;
         await this.studentRepository.save(student);
     }
 
-    async getNonSuspendedStudents(teacherEmail: Email): Promise<Student[]> {
+    async getUnsuspendedStudents(teacherEmail: Email): Promise<Student[]> {
         const teacher = await this.teacherRepository.findOne({
             relations: {
                 students: true,
