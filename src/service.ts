@@ -35,7 +35,7 @@ export class RegistrationService {
         // TODO: add test 
         // This is to avoid overwriting students already created
         const students = await this.studentRepository.findBy({
-            email: In(studentEmails),
+            email: In(studentEmails.map((e) => e.text)),
         });
         const registeredStudents = teacher.students ?? [];
         const existingIds = new Set(students.map((s) => s.email));
@@ -95,6 +95,22 @@ export class RegistrationService {
             throw new RequestError(`Teacher ${teacherEmail} does not exist.`);
         }
         return teacher.students;
+    }
+
+    async getAllTeachers(): Promise<Teacher[]> {
+        return await this.teacherRepository.find({
+            relations: {
+                students: true,
+            }
+        });
+    }
+
+    async getAllStudents(): Promise<Student[]> {
+        return await this.studentRepository.find({
+            relations: {
+                teachers: true,
+            }
+        });
     }
 }
 
