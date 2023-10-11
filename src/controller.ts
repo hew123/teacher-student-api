@@ -66,7 +66,7 @@ export class RegistrationController {
 
     getCommonStudents = async(input: GetCommonStudentsRequest): Promise<GetCommonStudentsResponse | ErrorRespWithCode> => {
         try {
-            const teachers = Array.isArray(input) ? input: [input];
+            const teachers = Array.isArray(input.teacher) ? input.teacher: [input.teacher];
             const emails = teachers.map((t) => new Email(t));
             const students = await this.service.getCommonStudents(emails);
             return { students: students.map((s) => s.email) };
