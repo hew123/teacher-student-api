@@ -15,7 +15,7 @@ export class RegistrationService {
         this.studentRepository = dbConnection.getRepository(Student);
     }
 
-    async register(teacherEmail: Email, studentEmails: Email[]): Promise<void> {
+    async register(teacherEmail: Email, studentEmails: Email[]): Promise<Teacher> {
         let teacher = await this.teacherRepository.findOne({
             relations: {
                 students: true,
@@ -40,7 +40,7 @@ export class RegistrationService {
                                             .map((email) => new Student(email.text));
         teacher.students = [...registeredStudents, ...existingStudents, ...studentsToAdd];
 
-        await this.teacherRepository.save(teacher);
+        return await this.teacherRepository.save(teacher);
     }
 
     async getCommonStudents(teacherEmails: Email[]): Promise<Student[]> {
@@ -62,7 +62,7 @@ export class RegistrationService {
         })
     }
 
-    async suspend(studentEmail: Email): Promise<void> {
+    async suspend(studentEmail: Email): Promise<Student> {
         const student = await this.studentRepository.findOne({
             where: { email: studentEmail.text }
         });
@@ -70,7 +70,7 @@ export class RegistrationService {
             throw new RequestError(`Student ${studentEmail.text} does not exist.`);
         }
         student.suspended = true;
-        await this.studentRepository.save(student);
+        return await this.studentRepository.save(student);
     }
 
     async getUnsuspendedStudents(teacherEmail: Email): Promise<Student[]> {

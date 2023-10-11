@@ -23,14 +23,13 @@ export class RegistrationController {
             const teacherEmail = new Email(input.teacher);
             const studentEmails = input.students.map((s) => new Email(s));
             await this.service.register(teacherEmail, studentEmails);
+            // returning something because undefined responses are hard to work with
             return { success: true };
         }
         catch (err) {
             const errMsg = `Error registering teacher ${input.teacher} with students ${JSON.stringify(input.students)}: ${err}`
             console.log(errMsg);
-            return err instanceof RequestError ? 
-                { message: errMsg, statusCode: 400 }: 
-                { message: errMsg, statusCode: 500 };
+            return getErrorRespWithCode(err, errMsg);
         }
     }
 
@@ -38,14 +37,13 @@ export class RegistrationController {
         try {
             const email = new Email(input.student);
             await this.service.suspend(email);
+            // returning something because undefined responses are hard to work with
             return { success: true };
         }
         catch(err) {
             const errMsg = `Error suspending student ${input.student}: ${err}`
             console.log(errMsg);
-            return err instanceof RequestError ? 
-                { message: errMsg, statusCode: 400 }: 
-                { message: errMsg, statusCode: 500 };
+            return getErrorRespWithCode(err, errMsg);
         }
     }
 
@@ -62,9 +60,7 @@ export class RegistrationController {
         catch(err) {
             const errMsg = `Error notifying from teacher ${input.teacher} with notification ${input.notification}: ${err}`
             console.log(errMsg);
-            return err instanceof RequestError ? 
-                { message: errMsg, statusCode: 400 }: 
-                { message: errMsg, statusCode: 500 };
+            return getErrorRespWithCode(err, errMsg);
         }
     }
 
@@ -78,11 +74,13 @@ export class RegistrationController {
         catch(err) {
             const errMsg = `Error getting common students with teachers ${input.teacher} : ${err}`
             console.log(errMsg);
-            return err instanceof RequestError ? 
-                { message: errMsg, statusCode: 400 }: 
-                { message: errMsg, statusCode: 500 };
+            return getErrorRespWithCode(err, errMsg);
         }
     }
+}
 
-    
+function getErrorRespWithCode(err: Error | unknown, msg: string): ErrorRespWithCode {
+    return err instanceof RequestError ? 
+        { message: msg, statusCode: 400 }: 
+        { message: msg, statusCode: 500 };
 }
