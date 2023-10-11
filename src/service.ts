@@ -49,8 +49,9 @@ export class RegistrationService {
 
     // TODO: add test
     async getCommonStudents(teacherEmails: Email[]): Promise<Student[]> {
-        // i.e. SELECT * FROM student-teachers 
-        // WHERE teacher.email = 'A' OR teacher.email = 'B' OR OR teacher.email = 'C' 
+        // i.e. SELECT * FROM students
+        // LEFT JOIN student-teachers AS a ON students.email = student-teachers.email
+        // WHERE student-teachers.email IN ('A','B','C')
         const students = await this.studentRepository.find({
             relations: {
                 teachers: true,
