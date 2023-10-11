@@ -25,6 +25,9 @@ COPY --from=build ./dist ./dist
 COPY --from=build ./node_modules ./node_modules
 
 ENV PORT=8080
+# This makes sure DB config host points 
+# to 'mysql' instead of 'localhost'
+ENV NODE_ENV=docker
 
 EXPOSE 8080
 

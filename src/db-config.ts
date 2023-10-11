@@ -5,7 +5,7 @@ import { Teacher } from "./db/teacher"
 
 export const DatabaseConfig: DataSourceOptions = {
     type: "mysql",
-    host: "localhost",
+    host: process.env.NODE_ENV === 'docker' ? 'mysql' : 'localhost',
     port: 3306,
     username: "root",
     password: "test",
