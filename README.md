@@ -20,11 +20,11 @@ We are also leveraging the `Many-to-many relationship` functionality in `typeorm
 ![design](./design.png)
 
 ## Running the server and MySQL database
-1. `npm install -g yarn` to install yarn which is used as an alternative to NPM because of its speed. 
 1. `docker-compose up` spins up the server at `localhost:8080` for the **Teacher-student-registration** service and **MySQL** database server at `localhost:3306`.
 (first time running it might take a while because `MySQL` image needs to be pulled and the server code needs to be containerized)
 
 ## Local Development
+1. `npm install -g yarn` to install yarn which is used as an alternative to NPM because of its speed. 
 1. `yarn install` to install dependencies.
 1. `yarn test` to run tests
 1. `yarn build` to compile typescript files to javascript
